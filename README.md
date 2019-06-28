@@ -23,6 +23,10 @@ Alternatively, you can see what block its syched up to so far:
 
     $ ./pivx-cli stop
 
+## Official Guide
+
+    https://pivxmasternode.org/2017/03/08/step-step-guide-setting-masternode/
+
 ## Credits
 
     https://forum.pivx.org/t/vultr-com-ubuntu-16-04-64bit-masternode-setup-guide/349
