@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+rpcuser={{ pivx_long_random_username }}
+rpcpassword={{ pivx_long_random_password }}
+rpcallowip=127.0.0.1
+listen=1
+server=1
+daemon=1
+logtimestamps=1
+maxconnections=256
+masternode=1
+externalip={{ pivx_masternode_ip }}
+bind={{ pivx_masternode_ip }}
+masternodeaddr={{ pivx_masternode_ip }}:51472
+masternodeprivkey={{ pivx_masternode_private_key }}

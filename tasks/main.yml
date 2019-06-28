@@ -1,0 +1,62 @@
+---
+- name: Creating PIVX app directory
+  become: yes
+  become_user: '{{ deploy_user }}'
+  file: path={{pivx_app_dir}} state=directory
+
+- name: Creating PIVX data directory
+  become: yes
+  become_user: '{{ deploy_user }}'
+  file: path={{pivx_data_dir}} state=directory
+
+- name: Checking if fresh install
+  become: yes
+  become_user: '{{ deploy_user }}'
+  command: ls {{pivx_data_dir}}
+  register: is_fresh
+
+- name: Checking if upgrade
+  become: yes
+  become_user: '{{ deploy_user }}'
+  shell: ls {{pivx_app_dir}} | tail -n 1 | cut -d '-' -f 2
+  register: is_upgrade
+
+#- debug:
+#    msg: "{{ is_upgrade.stdout }} < {{ pivx_version }}"
+#  when: is_upgrade.stdout < pivx_version
+
+- name: Stop existing PIVX daemon
+  become: yes
+  become_user: '{{ deploy_user }}'
+  shell: cd {{pivx_app_dir}}/`ls {{pivx_app_dir}} | tail -n 1`/bin && ./pivx-cli stop
+  when: is_fresh.stdout != "" and is_upgrade.stdout < pivx_version
+
+- name: Downloading and extracting PIVX
+  become: yes
+  become_user: '{{ deploy_user }}'
+  unarchive: src={{pivx_url}} dest={{pivx_app_dir}} copy=no mode=0755
+  when: is_fresh.stdout == "" or is_upgrade.stdout < pivx_version
+
+- name: Bootstraping PIVX blockchain
+  become: yes
+  become_user: '{{ deploy_user }}'
+  unarchive: src={{pivx_latest_bootstrap}} dest={{pivx_data_dir}} copy=no mode=0755
+  when: is_fresh.stdout == ""
+
+- name: Installing pivx.conf
+  become: yes
+  become_user: '{{ deploy_user }}'
+  template: src=pivx.conf.j2 dest={{pivx_data_dir}}/pivx.conf mode=644
+
+- name: Add cronjob to start PIVX daemon at boot
+  become: yes
+  become_user: '{{ deploy_user }}'
+  cron: name="Start PIVX at boot" special_time=reboot job="cd {{ pivx_bin_dir}} && ./pivxd -daemon"
+
+- name: Allow PIVX traffic through firewall
+  ufw: rule=allow port={{ pivx_port }} proto=tcp
+
+- name: Starting up the PIVX daemon
+  become: yes
+  become_user: '{{ deploy_user }}'
+  command: '{{ pivx_bin_dir }}/pivxd -daemon'

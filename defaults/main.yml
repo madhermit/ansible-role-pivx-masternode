@@ -1,0 +1,18 @@
+# defaults file for pivx
+---
+deploy_user: deploy
+
+pivx_version: 3.3.0
+
+pivx_data_dir: "/home/{{ deploy_user }}/.pivx"
+pivx_app_dir: "/home/{{ deploy_user }}/pivx"
+pivx_bin_dir: "{{pivx_app_dir}}/pivx-{{pivx_version}}/bin"
+
+pivx_port: 51472
+pivx_masternode_ip: "{{ansible_default_ipv4.address}}"
+
+pivx_url: "https://github.com/PIVX-Project/PIVX/releases/download/v{{pivx_version}}/pivx-{{pivx_version}}-x86_64-linux-gnu.tar.gz"
+pivx_latest_bootstrap: https://github.com/PIVX-Project/PIVX/releases/download/v3.1.0.2/pivx-chain-1168000-bootstrap.dat.zip
+pivx_long_random_username:
+pivx_long_random_password:
+pivx_masternode_private_key:
